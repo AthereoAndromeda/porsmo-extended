@@ -1,12 +1,12 @@
 [package]
-name = "porsmo"
-version = "0.3.3"
-edition = "2021"
+name = "porsmo-extended"
+version = "0.1.0"
+edition = "2024"
 readme = "README.md"
 license = "MIT"
 description = "A pomodoro, timer and stopwatch, all in one app"
-homepage = "https://github.com/ColorCookie-dev/porsmo"
-repository = "https://github.com/ColorCookie-dev/porsmo"
+homepage = "https://github.com/AthereoAndromeda/porsmo-extended"
+repository = "https://github.com/AthereoAndromeda/porsmo-extended"
 keywords = ["cli", "pomodoro", "timer", "countdown"]
 categories = ["command-line-utilities"]
 
@@ -18,3 +18,8 @@ rodio = "0.12.0"
 crossterm = "0.26.1"
 clap = { version = "4.3.0", features = ["derive"] }
 thiserror = "1.0.43"
+
+
+[[bin]]
+name = "porsmox"
+path = "src/main.rs"
