@@ -14,10 +14,10 @@ categories = ["command-line-utilities"]
 
 [dependencies]
 notify-rust = "4"
-rodio = "0.12.0"
-crossterm = "0.26.1"
+rodio = "0.20.1"
+crossterm = "0.29.0"
 clap = { version = "4.3.0", features = ["derive"] }
-thiserror = "1.0.43"
+thiserror = "2.0.12"
 
 
 [[bin]]

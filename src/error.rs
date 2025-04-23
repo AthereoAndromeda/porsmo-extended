@@ -1,12 +1,13 @@
+use std::io::Error;
 use std::num::ParseIntError;
 
 #[derive(Debug, thiserror::Error)]
 pub enum PorsmoError {
     #[error("Error entering raw mode in terminal")]
-    FailedRawModeEnter(#[source] crossterm::ErrorKind),
+    FailedRawModeEnter(#[source] Error),
 
     #[error("Error initializing terminal with alternate screen and mouse capture")]
-    FailedInitialization(#[source] crossterm::ErrorKind),
+    FailedInitialization(#[source] Error),
 
     #[error("Wrong format for time")]
     WrongFormatError,
@@ -15,5 +16,5 @@ pub enum PorsmoError {
     ParseIntError(#[from] ParseIntError),
 
     #[error(transparent)]
-    CrosstermError(#[from] crossterm::ErrorKind),
+    CrosstermError(#[from] Error),
 }
