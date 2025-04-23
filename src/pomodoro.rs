@@ -1,9 +1,9 @@
 use crate::alert::Alerter;
-use crate::input::{get_event, TIMEOUT};
+use crate::input::{TIMEOUT, get_event};
 use crate::stopwatch::Stopwatch;
 use crate::terminal::running_color;
+use crate::{CounterUI, prelude::*};
 use crate::{format::format_duration, input::Command};
-use crate::{prelude::*, CounterUI};
 use crossterm::cursor::{MoveTo, MoveToNextLine};
 use crossterm::style::Print;
 use crossterm::terminal::{Clear, ClearType};
@@ -231,7 +231,7 @@ fn pomodoro_update(
             }
             _ => (),
         },
-        UIMode::Running(ref mut stopwatch) => {
+        UIMode::Running(stopwatch) => {
             let elapsed = stopwatch.elapsed();
             let target = config.current_target(session.mode);
 
