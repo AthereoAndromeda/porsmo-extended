@@ -23,3 +23,13 @@ thiserror = "2.0.12"
 [[bin]]
 name = "porsmox"
 path = "src/main.rs"
+
+[profile.dev]
+codegen-units = 512
+
+[profile.release]
+codegen-units = 1 
+lto = true 
+opt-level = 3 
+panic = "abort" 
+strip = true 
