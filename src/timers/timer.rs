@@ -61,7 +61,7 @@ fn timer_update(command: Command, stopwatch: &mut Stopwatch) {
     }
 }
 
-#[derive(Debug, Default, Clone, Copy)]
+#[derive(Debug, Default, Clone)]
 pub struct TimerUI {
     stopwatch: Stopwatch,
     target: Duration,

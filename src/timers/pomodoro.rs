@@ -135,7 +135,7 @@ fn alert_message(next_mode: Mode) -> (&'static str, &'static str) {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 enum UIMode {
     Skip(Duration),
     Running(Stopwatch),
@@ -147,7 +147,7 @@ impl Default for UIMode {
     }
 }
 
-#[derive(Debug, Default, Clone, Copy)]
+#[derive(Debug, Default, Clone)]
 pub struct PomodoroUI {
     config: PomodoroConfig,
     session: Session,

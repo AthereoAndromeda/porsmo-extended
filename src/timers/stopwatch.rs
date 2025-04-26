@@ -6,7 +6,7 @@ use crate::{CounterUI, new_line_queue, prelude::*};
 use crate::{format::format_duration, input::Command};
 use crossterm::style::Stylize;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 pub struct Stopwatch {
     start_time: Option<Instant>,
     elapsed_before: Duration,
