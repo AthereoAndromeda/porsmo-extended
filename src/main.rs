@@ -1,5 +1,6 @@
 mod alert;
 mod cli;
+mod config;
 mod error;
 mod format;
 mod input;
@@ -12,6 +13,8 @@ use crate::input::{Command, TIMEOUT, get_event};
 use crate::pomodoro::PomodoroConfig;
 use clap::Parser;
 use cli::{Cli, CounterMode, PomoMode};
+use config::Config;
+use nanoserde::SerJson;
 use pomodoro::PomodoroUI;
 use prelude::*;
 use std::io::Write;
@@ -20,6 +23,9 @@ use terminal::TerminalHandler;
 use timer::TimerUI;
 
 fn main() -> Result<()> {
+    let conf = Config::new();
+    let a = conf.serialize_json();
+
     let args = Cli::parse();
     let mut terminal = TerminalHandler::new()?;
     let stdout = terminal.stdout();
@@ -56,6 +62,7 @@ fn main() -> Result<()> {
     ) {
         println!("{}", exitmessagestring);
     }
+
     Ok(())
 }
 
