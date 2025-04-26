@@ -4,11 +4,9 @@ mod error;
 mod format;
 mod input;
 mod macros;
-mod pomodoro;
 mod prelude;
-mod stopwatch;
 mod terminal;
-mod timer;
+mod timers;
 
 use crate::input::{Command, TIMEOUT, get_event};
 use crate::pomodoro::PomodoroConfig;

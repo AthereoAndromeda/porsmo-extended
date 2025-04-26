@@ -78,7 +78,7 @@ pub fn play_bell() -> Result<(), SoundError> {
     let (_stream, stream_handle) = OutputStream::try_default()?;
 
     // let volume = 0.5;
-    let audio = Decoder::new(Cursor::new(include_bytes!("notify_end.wav")))?;
+    let audio = Decoder::new(Cursor::new(include_bytes!("assets/notify_end.wav")))?;
     Sink::try_new(&stream_handle).map(|sink| {
         sink.append(audio);
         // sink.set_volume(volume);
