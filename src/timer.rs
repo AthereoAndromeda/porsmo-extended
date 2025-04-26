@@ -11,20 +11,27 @@ use crossterm::{
 use std::io::Write;
 use std::time::Duration;
 
+use chrono::{DateTime, Local, TimeDelta};
 fn timer_show(
     out: &mut impl Write,
     elapsed: Duration,
     target: Duration,
     is_running: bool,
     alerter: &mut Alerter,
+    finish_time: &DateTime<Local>,
 ) -> Result<()> {
+    let formatted_finish_time = finish_time
+        .format("%H:%M:%S")
+        .to_string()
+        .with(crossterm::style::Color::Blue);
+
     let (title, timer, controls, tim) = if elapsed < target {
         let time_left = target.saturating_sub(elapsed);
         (
             "Timer",
             format_duration(time_left).with(running_color(is_running)),
+            format!("ETA: {}", formatted_finish_time),
             "[Q]: quit, [Space]: pause/resume",
-            target.as_secs(),
         )
     } else {
         alerter.alert_once(
@@ -38,8 +45,8 @@ fn timer_show(
         (
             "Timer has ended",
             format!("+{excess_time}").with(running_color(is_running)),
+            format!("ETA: {}", formatted_finish_time),
             "[Q]: quit, [Space]: pause/resume",
-            target.as_secs(),
         )
     };
 
@@ -63,12 +70,19 @@ pub struct TimerUI {
     stopwatch: Stopwatch,
     target: Duration,
     alerter: Alerter,
+    finish_time: DateTime<Local>,
 }
 
 impl TimerUI {
     pub fn new(target: Duration) -> Self {
+        let dt1: DateTime<Local> = Local::now();
+        let finish_time = dt1
+            .checked_add_signed(TimeDelta::from_std(target).expect("Failed to convert Duration"))
+            .expect("Failed to calculate estimated time");
+
         Self {
             target,
+            finish_time,
             ..Default::default()
         }
     }
@@ -78,7 +92,14 @@ impl CounterUI for TimerUI {
     fn show(&mut self, out: &mut impl Write) -> Result<()> {
         let elapsed = self.stopwatch.elapsed();
         let is_running = self.stopwatch.started();
-        timer_show(out, elapsed, self.target, is_running, &mut self.alerter)
+        timer_show(
+            out,
+            elapsed,
+            self.target,
+            is_running,
+            &mut self.alerter,
+            &self.finish_time,
+        )
     }
 
     fn update(&mut self, command: Command) {
