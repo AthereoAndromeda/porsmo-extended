@@ -3,13 +3,14 @@ mod cli;
 mod error;
 mod format;
 mod input;
+mod macros;
 mod pomodoro;
 mod prelude;
 mod stopwatch;
 mod terminal;
 mod timer;
 
-use crate::input::{get_event, Command, TIMEOUT};
+use crate::input::{Command, TIMEOUT, get_event};
 use crate::pomodoro::PomodoroConfig;
 use clap::Parser;
 use cli::{Cli, CounterMode, PomoMode};
