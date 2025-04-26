@@ -2,12 +2,9 @@ use crate::alert::Alerter;
 use crate::input::{TIMEOUT, get_event};
 use crate::stopwatch::Stopwatch;
 use crate::terminal::running_color;
-use crate::{CounterUI, prelude::*};
+use crate::{CounterUI, new_line_queue, prelude::*};
 use crate::{format::format_duration, input::Command};
-use crossterm::cursor::{MoveTo, MoveToNextLine};
-use crossterm::style::Print;
-use crossterm::terminal::{Clear, ClearType};
-use crossterm::{queue, style::Color, style::Stylize};
+use crossterm::{style::Color, style::Stylize};
 
 use std::io::Write;
 use std::time::{Duration, Instant};
@@ -260,6 +257,7 @@ fn pomodoro_show(
 ) -> Result<()> {
     let target = config.current_target(session.mode);
     let round_number = format!("Session: {}", session.round);
+
     match ui_mode {
         UIMode::Skip(..) => {
             let (color, skip_to) = match session.next().mode {
@@ -267,36 +265,18 @@ fn pomodoro_show(
                 Mode::Break => (Color::Green, "skip to break?"),
                 Mode::LongBreak => (Color::Green, "skip to long break?"),
             };
-            queue!(
-                out,
-                MoveTo(0, 0),
-                Print(skip_to.with(color)),
-                Clear(ClearType::UntilNewLine),
-                MoveToNextLine(1),
-                Print(round_number),
-                Clear(ClearType::UntilNewLine),
-                MoveToNextLine(1),
-                Print(SKIP_CONTROLS),
-                Clear(ClearType::FromCursorDown),
-            )?;
+
+            new_line_queue!(out, skip_to.with(color), round_number, SKIP_CONTROLS,)?;
         }
         UIMode::Running(stopwatch) if stopwatch.elapsed() < target => {
             let time_left = target.saturating_sub(stopwatch.elapsed());
 
-            queue!(
+            new_line_queue!(
                 out,
-                MoveTo(0, 0),
-                Print(default_title(session.mode)),
-                Clear(ClearType::UntilNewLine),
-                MoveToNextLine(1),
-                Print(format_duration(&time_left).with(running_color(stopwatch.started())),),
-                Clear(ClearType::UntilNewLine),
-                MoveToNextLine(1),
-                Print(CONTROLS),
-                Clear(ClearType::UntilNewLine),
-                MoveToNextLine(1),
-                Print(round_number),
-                Clear(ClearType::FromCursorDown),
+                default_title(session.mode),
+                format_duration(&time_left).with(running_color(stopwatch.started())),
+                CONTROLS,
+                round_number,
             )?;
         }
         UIMode::Running(stopwatch) => {
@@ -304,26 +284,14 @@ fn pomodoro_show(
             let (title, message) = alert_message(session.next().mode);
             alerter.alert_once(title, message);
 
-            queue!(
+            new_line_queue!(
                 out,
-                MoveTo(0, 0),
-                Print(end_title(session.next().mode)),
-                Clear(ClearType::UntilNewLine),
-                MoveToNextLine(1),
-                Print(
-                    format!("+{}", format_duration(&excess_time),)
-                        .with(running_color(stopwatch.started()))
-                ),
-                Clear(ClearType::UntilNewLine),
-                MoveToNextLine(1),
-                Print(ENDING_CONTROLS),
-                Clear(ClearType::UntilNewLine),
-                MoveToNextLine(1),
-                Print(round_number),
-                Clear(ClearType::UntilNewLine),
-                MoveToNextLine(1),
-                Print(message),
-                Clear(ClearType::FromCursorDown),
+                end_title(session.next().mode),
+                format!("+{}", format_duration(&excess_time),)
+                    .with(running_color(stopwatch.started())),
+                ENDING_CONTROLS,
+                round_number,
+                message
             )?;
         }
     }

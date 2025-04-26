@@ -1,11 +1,10 @@
 use crate::alert::Alerter;
 use crate::stopwatch::Stopwatch;
 use crate::terminal::running_color;
+use crate::{CounterUI, new_line_queue, prelude::*};
 use crate::{format::format_duration, input::Command};
-use crate::{prelude::*, CounterUI};
-use crossterm::terminal::{Clear, ClearType};
 use crossterm::{
-    cursor::{MoveTo, MoveToNextLine},
+    cursor::MoveToNextLine,
     queue,
     style::{Print, Stylize},
 };
@@ -19,12 +18,13 @@ fn timer_show(
     is_running: bool,
     alerter: &mut Alerter,
 ) -> Result<()> {
-    let (title, timer, controls) = if elapsed < target {
+    let (title, timer, controls, tim) = if elapsed < target {
         let time_left = target.saturating_sub(elapsed);
         (
             "Timer",
             format_duration(time_left).with(running_color(is_running)),
             "[Q]: quit, [Space]: pause/resume",
+            target.as_secs(),
         )
     } else {
         alerter.alert_once(
@@ -39,22 +39,12 @@ fn timer_show(
             "Timer has ended",
             format!("+{excess_time}").with(running_color(is_running)),
             "[Q]: quit, [Space]: pause/resume",
+            target.as_secs(),
         )
     };
-    queue!(
-        out,
-        MoveTo(0, 0),
-        Print(title),
-        Clear(ClearType::UntilNewLine),
-        MoveToNextLine(1),
-        Print(timer),
-        Clear(ClearType::UntilNewLine),
-        MoveToNextLine(1),
-        Print(controls),
-        Clear(ClearType::UntilNewLine),
-        MoveToNextLine(1),
-        Clear(ClearType::FromCursorDown),
-    )?;
+
+    new_line_queue!(out, title, timer, controls, tim)?;
+
     out.flush()?;
     Ok(())
 }
@@ -77,7 +67,10 @@ pub struct TimerUI {
 
 impl TimerUI {
     pub fn new(target: Duration) -> Self {
-        Self { target, ..Default::default() }
+        Self {
+            target,
+            ..Default::default()
+        }
     }
 }
 
@@ -92,4 +85,3 @@ impl CounterUI for TimerUI {
         timer_update(command, &mut self.stopwatch)
     }
 }
-

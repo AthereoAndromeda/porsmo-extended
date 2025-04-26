@@ -1,15 +1,10 @@
 use std::time::Instant;
 use std::{io::Write, time::Duration};
 
-use crate::{prelude::*, CounterUI};
 use crate::terminal::running_color;
+use crate::{CounterUI, new_line_queue, prelude::*};
 use crate::{format::format_duration, input::Command};
-use crossterm::{
-    cursor::{MoveTo, MoveToNextLine},
-    queue,
-    style::{Print, Stylize},
-    terminal::{Clear, ClearType},
-};
+use crossterm::style::Stylize;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Stopwatch {
@@ -80,22 +75,20 @@ pub struct StopwatchUI {
     stopwatch: Stopwatch,
 }
 
+const CONTROLS: &'static str = "[Q]: quit, [Space]: pause/resume";
+
 impl CounterUI for StopwatchUI {
     fn show(&mut self, out: &mut impl Write) -> Result<()> {
         let elapsed = self.stopwatch.elapsed();
         let is_running = self.stopwatch.started();
-        queue!(
+
+        new_line_queue!(
             out,
-            MoveTo(0, 0),
-            Print("Stopwatch"),
-            Clear(ClearType::UntilNewLine),
-            MoveToNextLine(1),
-            Print(format_duration(elapsed).with(running_color(is_running))),
-            Clear(ClearType::UntilNewLine),
-            MoveToNextLine(1),
-            Print("[Q]: quit, [Space]: pause/resume"),
-            Clear(ClearType::FromCursorDown),
+            "Stopwatch",
+            format_duration(elapsed).with(running_color(is_running)),
+            CONTROLS,
         )?;
+
         out.flush()?;
         Ok(())
     }
@@ -109,4 +102,3 @@ impl CounterUI for StopwatchUI {
         }
     }
 }
-
