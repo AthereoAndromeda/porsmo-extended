@@ -4,12 +4,13 @@ use std::{io::Write, time::Duration};
 use crate::terminal::running_color;
 use crate::{CounterUI, new_line_queue, prelude::*};
 use crate::{format::format_duration, input::Command};
-use crossterm::style::Stylize;
+use crossterm::style::{Color, Stylize};
 
 #[derive(Debug, Clone)]
 pub struct Stopwatch {
     start_time: Option<Instant>,
     elapsed_before: Duration,
+    recorded_laps: Vec<Duration>,
 }
 
 impl Default for Stopwatch {
@@ -17,6 +18,7 @@ impl Default for Stopwatch {
         Self {
             start_time: Some(Instant::now()),
             elapsed_before: Duration::ZERO,
+            recorded_laps: Vec::new(),
         }
     }
 }
@@ -26,6 +28,7 @@ impl Stopwatch {
         Self {
             start_time,
             elapsed_before,
+            ..Default::default()
         }
     }
 
@@ -64,25 +67,44 @@ impl Stopwatch {
             }
         }
     }
+
+    pub fn record_lap(&mut self) {
+        self.recorded_laps.push(self.elapsed());
+    }
 }
 
-#[derive(Debug, Clone, Copy, Default)]
+#[derive(Debug, Clone, Default)]
 pub struct StopwatchUI {
     stopwatch: Stopwatch,
 }
 
-const CONTROLS: &str = "[Q]: quit, [Space]: pause/resume";
+const CONTROLS: &str = "[Q]: quit, [Space]: pause/resume, [Enter]: record lap";
 
 impl CounterUI for StopwatchUI {
     fn show(&mut self, out: &mut impl Write) -> Result<()> {
         let elapsed = self.stopwatch.elapsed();
         let is_running = self.stopwatch.started();
+        let laps_formatted = self
+            .stopwatch
+            .recorded_laps
+            .iter()
+            .enumerate()
+            .map(|(idx, d)| {
+                format!(
+                    "Lap {}: {}\n",
+                    idx + 1,
+                    format_duration(d).with(Color::Cyan)
+                )
+            })
+            .collect::<String>();
 
         new_line_queue!(
             out,
             "Stopwatch",
             format_duration(elapsed).with(running_color(is_running)),
             CONTROLS,
+            "",
+            laps_formatted
         )?;
 
         out.flush()?;
@@ -93,7 +115,8 @@ impl CounterUI for StopwatchUI {
         match command {
             Command::Pause => self.stopwatch.stop(),
             Command::Resume => self.stopwatch.start(),
-            Command::Toggle | Command::Enter => self.stopwatch.toggle(),
+            Command::Toggle => self.stopwatch.toggle(),
+            Command::Enter => self.stopwatch.record_lap(),
             _ => (),
         }
     }
