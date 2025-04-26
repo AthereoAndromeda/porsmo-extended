@@ -3,11 +3,7 @@ use crate::stopwatch::Stopwatch;
 use crate::terminal::running_color;
 use crate::{CounterUI, new_line_queue, prelude::*};
 use crate::{format::format_duration, input::Command};
-use crossterm::{
-    cursor::MoveToNextLine,
-    queue,
-    style::{Print, Stylize},
-};
+use crossterm::style::Stylize;
 use std::io::Write;
 use std::time::Duration;
 

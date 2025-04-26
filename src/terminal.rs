@@ -4,11 +4,11 @@ use crossterm::{
     execute,
     style::Color,
     terminal::{
-        disable_raw_mode, enable_raw_mode, Clear, ClearType, EnterAlternateScreen,
-        LeaveAlternateScreen,
+        Clear, ClearType, EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode,
+        enable_raw_mode,
     },
 };
-use std::io::{stdout, Stdout};
+use std::io::{Stdout, stdout};
 
 pub struct TerminalHandler(Stdout);
 

@@ -4,7 +4,7 @@ use crate::stopwatch::Stopwatch;
 use crate::terminal::running_color;
 use crate::{CounterUI, new_line_queue, prelude::*};
 use crate::{format::format_duration, input::Command};
-use crossterm::{style::Color, style::Stylize};
+use crossterm::style::{Color, Stylize};
 
 use std::io::Write;
 use std::time::{Duration, Instant};
