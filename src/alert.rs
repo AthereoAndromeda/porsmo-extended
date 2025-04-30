@@ -28,14 +28,8 @@ pub fn alert(title: impl Into<String>, message: impl Into<String>) {
     });
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Default, Clone, Copy)]
 pub struct Alerter(bool);
-
-impl Default for Alerter {
-    fn default() -> Self {
-        Self(false)
-    }
-}
 
 impl Alerter {
     pub fn alert_once(&mut self, title: impl Into<String>, message: impl Into<String>) {

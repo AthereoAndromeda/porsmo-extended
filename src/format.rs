@@ -34,7 +34,7 @@ pub fn parse_duration(text: &str) -> Result<Duration> {
             let secs = secs.parse::<u64>()?;
             (Duration::from_secs(secs), text)
         }
-        None if text == "" => (Duration::ZERO, ""),
+        None if text.is_empty() => (Duration::ZERO, ""),
         _ => return Err(PorsmoError::WrongFormatError),
     };
 

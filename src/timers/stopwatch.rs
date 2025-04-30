@@ -37,15 +37,11 @@ impl Stopwatch {
     }
 
     pub fn started(&self) -> bool {
-        if matches!(self.start_time, None) {
-            false
-        } else {
-            true
-        }
+        self.start_time.is_some()
     }
 
     pub fn start(&mut self) {
-        if matches!(self.start_time, None) {
+        if self.start_time.is_none() {
             self.start_time = Some(Instant::now());
         }
     }
@@ -75,7 +71,7 @@ pub struct StopwatchUI {
     stopwatch: Stopwatch,
 }
 
-const CONTROLS: &'static str = "[Q]: quit, [Space]: pause/resume";
+const CONTROLS: &str = "[Q]: quit, [Space]: pause/resume";
 
 impl CounterUI for StopwatchUI {
     fn show(&mut self, out: &mut impl Write) -> Result<()> {

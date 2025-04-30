@@ -274,7 +274,7 @@ fn pomodoro_show(
             new_line_queue!(
                 out,
                 default_title(session.mode),
-                format_duration(&time_left).with(running_color(stopwatch.started())),
+                format_duration(time_left).with(running_color(stopwatch.started())),
                 CONTROLS,
                 round_number,
             )?;
@@ -287,7 +287,7 @@ fn pomodoro_show(
             new_line_queue!(
                 out,
                 end_title(session.next().mode),
-                format!("+{}", format_duration(&excess_time),)
+                format!("+{}", format_duration(excess_time),)
                     .with(running_color(stopwatch.started())),
                 ENDING_CONTROLS,
                 round_number,
