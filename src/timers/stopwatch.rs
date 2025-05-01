@@ -11,6 +11,7 @@ pub struct Stopwatch {
     start_time: Option<Instant>,
     elapsed_before: Duration,
     recorded_laps: Vec<Duration>,
+    debounce_remaining: Instant,
 }
 
 impl Default for Stopwatch {
@@ -19,6 +20,7 @@ impl Default for Stopwatch {
             start_time: Some(Instant::now()),
             elapsed_before: Duration::ZERO,
             recorded_laps: Vec::new(),
+            debounce_remaining: Instant::now(),
         }
     }
 }
@@ -69,7 +71,14 @@ impl Stopwatch {
     }
 
     pub fn record_lap(&mut self) {
+        // Wait 100ms to register another lap
+        if self.debounce_remaining.elapsed().as_millis() < 100 {
+            return;
+        }
+
         self.recorded_laps.push(self.elapsed());
+
+        self.debounce_remaining = Instant::now();
     }
 }
 
